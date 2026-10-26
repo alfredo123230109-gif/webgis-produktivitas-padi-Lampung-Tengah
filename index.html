@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGIS Produktivitas Padi</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Efek Transisi Berkedip -->
+    <div id="blink-effect" class="blink-overlay"></div>
+
+    <div id="front-page" class="front-overlay">
+        <nav class="front-nav">
+            <div class="front-brand">🌾 WebGIS Produktivitas Padi</div>
+            <ul class="front-links">
+                <li><a href="#" id="nav-beranda" class="active">Beranda</a></li>
+                <li><a href="#" id="nav-tentang">Tentang</a></li>
+            </ul>
+        </nav>
+        <!-- BANNER BERANDA DENGAN BACKGROUND FOTO P010 -->
+        <section id="section-beranda" class="front-section active">
+            <div class="hero-content">
+                <h1>WebGIS Estimasi Produktivitas Padi</h1>
+                <button id="btn-mulai-webgis" class="btn-primary">Mulai Eksplorasi Peta</button>
+            </div>
+        </section>
+        <section class="hero-section">
+    <h1 class="hero-title">Sistem Pemetaan & Estimasi Produktivitas Padi</h1>
+    <p class="hero-subtitle">
+        Visualisasi berbasis spasial-temporal untuk estimasi hasil panen tanaman padi di Kabupaten Lampung Tengah menggunakan integrasi data penginderaan jauh Sentinel-2 dan algoritma Machine Learning.
+    </p>
+    
+    <!-- Info Badge Transparan di Atas Foto -->
+    <div class="hero-badges">
+        <span class="hero-badge-item">📍 Lokasi: Kab. Lampung Tengah</span>
+        <span class="hero-badge-item">🛰️ Citra: Sentinel-2 (SAVI & MSAVI)</span>
+        <span class="hero-badge-item">📊 Periode: 2020, 2022, 2024</span>
+    </div>
+</section>
+
+        <section id="section-tentang" class="front-section">
+            <div class="about-content">
+                <h2>Tentang Penelitian</h2>
+                <div class="divider"></div>
+                <p>Penelitian ini bertujuan untuk mengembangkan model estimasi produktivitas padi berbasis citra Sentinel-2 melalui Google Earth Engine. Hasil analisis divisualisasikan ke dalam bentuk <i>XYZ Raster Tiles</i> agar informasi produktivitas dapat disajikan secara spasial dan temporal, serta mudah diakses melalui internet oleh masyarakat.</p>
+                <div class="team-info">
+                    <p><strong>Lokasi:</strong> Lampung Tengah</p>
+                    <p><strong>Algoritma:</strong> Random Forest</p>
+                    <p><strong>Indeks:</strong> SAVI & MSAVI</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================= HEADER AWAL ================= -->
+    <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; background-color: #8bc34a; padding: 10px 20px; border-bottom: 2px solid #7cb342; height: 75px; box-sizing: border-box; width: 100%; z-index: 1000;">
+        
+        <!-- BAGIAN KIRI: 2 Logo & Judul -->
+        <div class="header-left" style="display: flex; align-items: center; gap: 15px;">
+            <!-- Tempat 2 Logo -->
+            <div style="display: flex; gap: 8px;">
+                <img src="logo-itera.png" alt="Logo ITERA" style="height: 48px; width: 48px; object-fit: contain; background: white; border-radius: 50%; padding: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+                <img src="logo-geomatika.jpg" alt="Logo Geomatika" style="height: 48px; width: 48px; object-fit: contain; background: white; border-radius: 50%; padding: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+            </div>
+            
+            <!-- Teks Judul -->
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                <h1 style="margin: 0; font-size: 20px; color: #1b4332; font-weight: 700;">WebGIS Pemetaan Produktivitas Padi</h1>
+                <p style="margin: 3px 0 0 0; font-size: 14px; color: #2e312c;">Kabupaten Lampung Tengah</p>
+            </div>
+        </div>
+
+        <!-- BAGIAN KANAN: Koordinat & Tombol Beranda -->
+        <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+            <!-- Kotak Koordinat Sesuai Lampiran -->
+            <div class="coord-box-modern">
+                Lat: <span id="lat-tampil">-4.00000</span> | Lng: <span id="lng-tampil">105.00000</span>
+            </div>
+            <button id="btn-kembali" class="btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Beranda
+            </button>
+        </div>
+    </div>
+
+
+    </header>
+    <!-- ================= AKHIR HEADER ================= -->
+    <!-- Tombol Sidebar Kiri & Kanan -->
+    <button id="toggle-layer-btn">
+        <i class="fa-solid fa-layer-group"></i> Layer Data
+    </button>
+    <button id="toggle-stats-btn">
+        <i class="fa-solid fa-chart-simple"></i> Statistik Hasil
+    </button>
+
+    <!-- Peta -->
+    <div id="map"></div>
+    <!-- Sidebar Kiri: Layer Data -->
+    <aside id="sidebar-panel" class="sidebar sidebar-left">
+        <div class="sidebar-header">
+            <h2><i class="fa-solid fa-map"></i> Pengaturan Layer</h2>
+            <button id="close-btn" class="close-btn"><i class="fa-solid fa-times"></i></button>
+        </div>
+
+        <div class="sidebar-content">
+            <div class="layer-group">
+                <h3>1. BASEMAP</h3>
+                <label class="radio-custom">
+                    <input type="radio" name="basemap" id="base-satelit" checked>
+                    <span class="radio-mark"></span> Citra Satelit (Esri)
+                </label>
+                <label class="radio-custom">
+                    <input type="radio" name="basemap" id="base-osm">
+                    <span class="radio-mark"></span> OpenStreetMap (Jalan)
+                </label>
+            </div>
+
+            <div class="layer-group">
+                <h3>2. DATA LAPANGAN</h3>
+                <label class="checkbox-custom">
+                    <input type="checkbox" id="layer-titik" checked>
+                    <span class="check-mark"></span>
+                    <span class="legend-dot red"></span> Titik Validasi Aktual (31 Titik)
+                </label>
+            </div>
+
+            <div class="layer-group">
+                <h3>3. ADMINISTRASI</h3>
+                <label class="checkbox-custom">
+                    <input type="checkbox" id="layer-batas-kab">
+                    <span class="check-mark"></span> Batas Kab. Lampung Tengah
+                </label>
+                <label class="checkbox-custom">
+                    <input type="checkbox" id="layer-batas-kec">
+                    <span class="check-mark"></span> Batas Kec. Lampung Tengah
+                </label>
+            <div class="layer-group">
+                <h3>4. INDEKS VEGETASI (SAVI)</h3>
+                <label class="checkbox-custom">
+                    <input type="checkbox" id="chk-savi-2020" onchange="toggleSavi2020(this.checked)">
+                    <span class="check-mark"></span> SAVI Tahun 2020
+                </label>
+                <label class="checkbox-custom">
+                    <input type="checkbox" id="chk-savi-2022" onchange="toggleSavi2022(this.checked)">
+                    <span class="check-mark"></span> SAVI Tahun 2022
+                </label>
+                <label class="checkbox-custom">
+                    <input type="checkbox" id="chk-savi-2024" onchange="toggleSavi2024(this.checked)">
+                    <span class="check-mark"></span> SAVI Tahun 2024
+                </label>
+            </div>
+
+            <div class="layer-group">
+                <h3>5. INDEKS VEGETASI (MSAVI)</h3>
+                <label class="checkbox-custom">
+                    <input type="checkbox" id="chk-msavi-2020" onchange="toggleMsavi2020(this.checked)">
+                    <span class="check-mark"></span> MSAVI Tahun 2020
+                </label>
+                <label class="checkbox-custom">
+                    <input type="checkbox" id="chk-msavi-2022" onchange="toggleMsavi2022(this.checked)">
+                    <span class="check-mark"></span> MSAVI Tahun 2022
+                </label>
+                <label class="checkbox-custom">
+                    <input type="checkbox" id="chk-msavi-2024" onchange="toggleMsavi2024(this.checked)">
+                    <span class="check-mark"></span> MSAVI Tahun 2024
+                </label>
+            </div>
+
+            <!-- ================= TAMBAHAN MENU KE 6 ================= -->
+            <div class="layer-group accordion-group" style="margin-top: 15px; border-top: 1px dashed #8bc34a; padding-top: 15px;">
+                <!-- Header Accordion -->
+                <h3 class="accordion-header" id="accordion-estimasi" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: #1b4332; font-size: 0.8rem;">
+                    <span>6. ESTIMASI PRODUKTIVITAS</span>
+                    <i class="fa-solid fa-chevron-down" style="transition: transform 0.3s;"></i>
+                </h3>
+                
+                <!-- Konten Accordion (Awalnya tersembunyi/display:none) -->
+                <div class="accordion-content" id="content-estimasi" style="display: none; margin-top: 12px;">
+        
+        <!-- ================= LAYER 1: KLASIFIKASI TUTUPAN LAHAN ================= -->
+        <div class="layer-block" style="margin-bottom: 14px;">
+            <label class="layer-item" style="font-weight: bold; color: #1b4332; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="layer-estimasi-raster" onchange="toggleKlasifikasiTutupan(this.checked)">
+                <span>Klasifikasi Tutupan Lahan (RF)</span>
+            </label>
+
+            <!-- Container Ringkasan & Legenda Tutupan Lahan (Otomatis Tampil/Sembunyi) -->
+            <div id="container-tutupan" style="display: none; margin-top: 8px; margin-left: 22px;">
+                <!-- Ringkasan Tutupan Lahan -->
+                <div style="background: #f4fbf7; border-left: 4px solid #27ae60; border-radius: 8px; padding: 10px 12px; font-size: 11px; line-height: 1.6; color: #2d3748; margin-bottom: 8px;">
+                    <div><b>Total Luas Area:</b> 91.500 Ha</div>
+                    <div><b>Akurasi Model:</b> 91,5% (Sangat Baik)</div>
+                    <div><b>Kelas Dominan:</b> Sawah (75.430 Ha)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= LAYER 2: ESTIMASI PRODUKTIVITAS PADI ================= -->
+        <div class="layer-block" style="margin-bottom: 10px;">
+            <label class="layer-item" style="font-weight: bold; color: #1b4332; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="chk-estimasi-rf" onchange="toggleEstimasiRF(this.checked)">
+                <span>Peta Estimasi Produktivitas Padi</span>
+            </label>
+
+            <!-- Container Ringkasan & Legenda Produktivitas (Otomatis Tampil/Sembunyi) -->
+            <div id="container-estimasi" style="display: none; margin-top: 8px; margin-left: 22px;">
+                <!-- Ringkasan Produktivitas -->
+                <div style="background: #f4fbf7; border-left: 4px solid #27ae60; border-radius: 8px; padding: 10px 12px; font-size: 11px; line-height: 1.6; color: #2d3748; margin-bottom: 8px;">
+                    <div><b>Total Luas Sawah:</b> 75.430 Ha</div>
+                    <div><b>Rata-rata Prod:</b> 5.8 Ton/Ha</div>
+                    <div><b>Kec. Tertinggi:</b> Seputih Raman</div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slider Transparansi -->
+        <div style="background: #ffffff; padding: 8px 10px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 10px;">
+            <label style="font-size: 11px; font-weight: bold; color: #4a5568; display: flex; justify-content: space-between;">
+                <span>Transparansi Layer:</span>
+                <span id="opacity-val">85%</span>
+            </label>
+            <input type="range" min="0" max="1" step="0.05" value="0.85" style="width: 100%; accent-color: #27ae60; margin-top: 4px;" oninput="updateRasterOpacity(this.value)">
+        </div>
+
+    </div>
+</div>
+            <!-- ================= AKHIR MENU KE 6 ================= -->
+
+        </div>
+    </aside>
+    <!-- SIDEBAR STATISTIK KANAN -->
+    <div id="sidebar-stats" class="sidebar-panel">
+        <div class="sidebar-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #132a20;">
+            <h3 style="color: #ffeb3b; margin: 0; font-size: 15px;"><i class="fa-solid fa-chart-pie"></i> Statistik Analisis</h3>
+            <button id="close-stats-btn" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">&times;</button>
+        </div>
+        
+        <div class="sidebar-body" style="padding: 12px; overflow-y: auto; max-height: calc(100vh - 70px);">
+            
+            <!-- PANEL COMBOBOX PILIH TAHUN -->
+            <div style="background: rgba(255, 255, 255, 0.08); padding: 10px; border-radius: 8px; margin-bottom: 12px;">
+                <label for="select-tahun" style="font-size: 11px; color: #ffeb3b; font-weight: bold; display: block; margin-bottom: 5px;">
+                    <i class="fa-solid fa-calendar-days"></i> Pilih Tahun Analisis:
+                </label>
+                <select id="select-tahun" style="width: 100%; padding: 6px 10px; background: #1b4332; color: #fff; border: 1px solid #4caf50; border-radius: 6px; font-size: 12px; cursor: pointer; outline: none;">
+                    <option value="2024" selected>2024 (Titik Fiks Lapangan)</option>
+                    <option value="2022">2022 (Estimasi Reflektansi)</option>
+                    <option value="2020">2020 (Estimasi Reflektansi)</option>
+                </select>
+            </div>
+
+            <!-- LEGENDA RASTER DINAMIS -->
+            <div id="legenda-container" style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; margin-bottom: 12px; display: none;">
+                <h4 style="font-size: 12px; color: #fff; margin: 0 0 6px 0;">Legenda Peta Aktif</h4>
+                <div id="legenda-content" style="font-size: 11px; color: #ccc;">
+                    <!-- Konten legenda akan diisi otomatis via JS saat checkbox diklik -->
+                </div>
+            </div>
+
+            <!-- RINGKASAN ANGKA -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 8px; border-radius: 6px; text-align: center;">
+                    <span style="font-size: 10px; color: #ccc;">Total Sampel</span>
+                    <h3 id="stat-total" style="margin: 2px 0; font-size: 17px; color: #ffeb3b;">31</h3>
+                    <span style="font-size: 9px; color: #aaa;">Titik Ukur</span>
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 8px; border-radius: 6px; text-align: center;">
+                    <span style="font-size: 10px; color: #ccc;">Rata-Rata Prod.</span>
+                    <h3 id="stat-rata" style="margin: 2px 0; font-size: 17px; color: #4caf50;">0</h3>
+                    <span style="font-size: 9px; color: #aaa;">Ton / Ha</span>
+                </div>
+            </div>
+
+            <!-- SCATTER PLOT SAVI -->
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; margin-bottom: 12px;">
+                <h4 style="font-size: 12px; color: #ffeb3b; margin: 0 0 6px 0;">Scatter Plot (SAVI vs Produktivitas)</h4>
+                <div style="display: flex; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; font-size: 10px; color: #eee; margin-bottom: 8px;">
+                    <span>R²: <b id="r2-savi" style="color:#ffeb3b;">-</b></span>
+                    <span>RMSE: <b id="rmse-savi" style="color:#4caf50;">-</b></span>
+                    <span>MAE: <b id="mae-savi" style="color:#29b6f6;">-</b></span>
+                </div>
+                <div style="position: relative; width: 100%; height: 160px;">
+                    <canvas id="scatterChart"></canvas>
+                </div>
+            </div>
+
+            <!-- SCATTER PLOT MSAVI -->
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; margin-bottom: 12px;">
+                <h4 style="font-size: 12px; color: #4caf50; margin: 0 0 6px 0;">Scatter Plot (MSAVI vs Produktivitas)</h4>
+                <div style="display: flex; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; font-size: 10px; color: #eee; margin-bottom: 8px;">
+                    <span>R²: <b id="r2-msavi" style="color:#ffeb3b;">-</b></span>
+                    <span>RMSE: <b id="rmse-msavi" style="color:#4caf50;">-</b></span>
+                    <span>MAE: <b id="mae-msavi" style="color:#29b6f6;">-</b></span>
+                </div>
+                <div style="position: relative; width: 100%; height: 160px;">
+                    <canvas id="scatterMsaviChart"></canvas>
+                </div>
+            </div>
+            <!-- DIAGRAM LINGKARAN -->
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px;">
+                <h4 style="font-size: 12px; color: #fff; margin: 0 0 6px 0;">Klasifikasi Estimasi Panen</h4>
+                <div style="position: relative; width: 100%; height: 150px;">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

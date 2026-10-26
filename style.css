@@ -1,0 +1,213 @@
+/* Reset & Font */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { overflow: hidden; background-color: #f1f8e9; color: #1b4332; }
+
+/* ================= CSS HALAMAN DEPAN (OVERLAY) ================= */
+.front-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
+    z-index: 9999; 
+    display: flex; flex-direction: column;
+    transition: opacity 0.8s ease, visibility 0.8s;
+}
+.front-overlay.hidden { opacity: 0; visibility: hidden; }
+
+/* Efek Berkedip (Blink Transition) */
+.blink-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: white;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out;
+}
+.blink-overlay.active { opacity: 1; visibility: visible; }
+
+.front-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 50px; background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px); border-bottom: 2px solid #8bc34a;
+}
+.front-brand { font-size: 1.5rem; font-weight: 700; color: #1b4332; }
+.front-links { list-style: none; display: flex; gap: 30px; }
+.front-links a { text-decoration: none; color: #33691e; font-weight: 600; font-size: 1.1rem; transition: 0.3s; padding-bottom: 5px; }
+.front-links a:hover, .front-links a.active { color: #1b4332; border-bottom: 3px solid #ffeb3b; }
+
+.front-section { flex: 1; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px; animation: fadeIn 0.5s ease; }
+.front-section.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.hero-content h1 { font-size: 3rem; color: #1b4332; margin-bottom: 20px; line-height: 1.2; }
+.hero-content p { font-size: 1.2rem; color: #33691e; max-width: 700px; margin: 0 auto 40px auto; line-height: 1.6; }
+.btn-primary { background: #ffeb3b; color: #1b4332; border: 2px solid #fbc02d; padding: 15px 40px; font-size: 1.2rem; font-weight: 700; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(251, 192, 45, 0.3); }
+.btn-primary:hover { background: #1b4332; color: #ffeb3b; border-color: #1b4332; transform: translateY(-3px); }
+
+.about-content { background: #ffffff; padding: 50px; border-radius: 20px; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #8bc34a; }
+.about-content h2 { color: #1b4332; font-size: 2.2rem; margin-bottom: 15px; }
+.divider { width: 80px; height: 4px; background: #ffeb3b; margin: 0 auto 25px auto; border-radius: 2px; }
+.about-content p { color: #2e312c; font-size: 1.1rem; line-height: 1.8; margin-bottom: 20px; }
+.team-info { margin-top: 30px; padding-top: 20px; border-top: 1px dashed #8bc34a; display: flex; justify-content: space-around; font-weight: 600; color: #33691e; }
+
+/* ================= CSS DASHBOARD WEBGIS ================= */
+.top-header { position: absolute; top: 0; left: 0; width: 100%; height: 70px; background-color: #8bc34a; border-bottom: 1px solid #689f38; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; z-index: 2000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.brand { display: flex; align-items: center; gap: 15px; }
+.logo { height: 45px; border-radius: 50%; background: #fff; padding: 2px; }
+.brand-text h1 { font-size: 1.1rem; color: #1b4332; font-weight: 700; letter-spacing: 0.5px; }
+.brand-text p { font-size: 0.8rem; color: #33691e; margin-top: 3px; font-weight: 500; }
+
+.header-controls { display: flex; align-items: center; gap: 15px; }
+
+/* Desain Tombol Kembali ke Beranda */
+.btn-back { background: #ffeb3b; color: #1b4332; border: 1px solid #fbc02d; padding: 6px 15px; border-radius: 20px; font-family: inherit; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px; }
+.btn-back:hover { background: #1b4332; color: #ffeb3b; border-color: #1b4332; }
+
+/* Tombol Toggle Sidebar Kiri & Kanan */
+#toggle-layer-btn, #toggle-stats-btn { position: absolute; top: 90px; z-index: 1000; background-color: #ffffff; color: #1b4332; border: 1px solid #8bc34a; padding: 12px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; transition: 0.3s; }
+#toggle-layer-btn { left: 20px; }
+#toggle-stats-btn { right: 20px; }
+#toggle-layer-btn:hover, #toggle-stats-btn:hover { background-color: #ffeb3b; border-color: #fbc02d; color: #1b4332; }
+
+/* CSS Sidebar Kiri & Kanan */
+.sidebar { position: absolute; top: 90px; width: 320px; max-height: calc(100vh - 120px); background-color: #ffffff; border: 1px solid #8bc34a; border-radius: 12px; z-index: 1500; box-shadow: 5px 5px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.sidebar-left { left: -400px; }
+.sidebar-left.active { left: 20px; }
+
+.sidebar-header { padding: 15px 20px; border-bottom: 1px solid #dcedc8; display: flex; justify-content: space-between; align-items: center; background-color: #f1f8e9; border-radius: 12px 12px 0 0; }
+.sidebar-header h2 { font-size: 1rem; color: #1b4332; display: flex; gap: 10px; align-items: center; }
+.close-btn { background: transparent; border: none; color: #689f38; font-size: 1.2rem; cursor: pointer; }
+.close-btn:hover { color: #ef4444; }
+
+.sidebar-content { padding: 20px; overflow-y: auto; }
+.layer-group { margin-bottom: 25px; }
+.layer-group h3 { font-size: 0.75rem; color: #33691e; margin-bottom: 12px; font-weight: 700; letter-spacing: 1px; }
+
+.radio-custom, .checkbox-custom { display: flex; align-items: center; position: relative; padding-left: 30px; margin-bottom: 12px; cursor: pointer; font-size: 0.85rem; color: #2e312c; font-weight: 500;}
+.radio-custom input, .checkbox-custom input { position: absolute; opacity: 0; cursor: pointer; }
+.radio-mark, .check-mark { position: absolute; top: 0; left: 0; height: 18px; width: 18px; background-color: #f1f8e9; border: 1px solid #8bc34a; }
+.radio-mark { border-radius: 50%; }
+.check-mark { border-radius: 4px; }
+.radio-custom:hover input ~ .radio-mark, .checkbox-custom:hover input ~ .check-mark { border-color: #ffeb3b; }
+.radio-custom input:checked ~ .radio-mark, .checkbox-custom input:checked ~ .check-mark { background-color: #ffeb3b; border-color: #fbc02d; }
+.radio-mark:after, .check-mark:after { content: ""; position: absolute; display: none; }
+.radio-custom input:checked ~ .radio-mark:after, .checkbox-custom input:checked ~ .check-mark:after { display: block; }
+.radio-custom .radio-mark:after { top: 5px; left: 5px; width: 6px; height: 6px; border-radius: 50%; background: #1b4332; }
+.checkbox-custom .check-mark:after { left: 5px; top: 2px; width: 4px; height: 8px; border: solid #1b4332; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+
+.legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 5px; }
+.legend-dot.red { background-color: #ffeb3b; border: 1px solid #fbc02d; box-shadow: 0 0 5px rgba(255, 235, 59, 0.5); }
+
+/* Posisi awal sidebar kanan (Statistik) */
+.sidebar-panel { position: fixed; top: 70px; right: -420px; width: 400px; height: calc(100vh - 70px); background: #1b4332; color: white; transition: right 0.3s ease; z-index: 1000; box-shadow: -2px 0 5px rgba(0,0,0,0.5); }
+.sidebar-panel.active { right: 0; }
+
+/* ================= KOTAK KOORDINAT (SESUAI LAMPIRAN 2) ================= */
+.coord-box-modern {
+    background-color: #debd18;
+    border: 1px solid #040401;
+    border-radius: 6px;
+    padding: 6px 15px;
+    font-size: 11px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-weight: bold;
+    color: #0a0c08;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+.coord-box-modern span {
+    color: #ebf0f5;
+    min-width: 65px;
+    display: inline-block;
+}
+
+/* ================= PETA & POPUP ================= */
+#map { position: absolute; top: 70px; left: 0; width: 100vw; height: calc(100vh - 70px); z-index: 1; }
+
+.leaflet-popup-content-wrapper { background: #ffffff; color: #1b4332; border: 1px solid #8bc34a; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+.leaflet-popup-tip { background: #ffffff; border: 1px solid #8bc34a; }
+
+/* Label GeoJSON Kecamatan */
+.label-kecamatan { 
+    background: transparent; border: none; box-shadow: none; font-weight: 700; 
+    font-size: 10px; color: #333; 
+    text-shadow: 1px 1px 2px #fff, -1px -1px 2px #fff, 1px -1px 2px #fff, -1px 1px 2px #fff; 
+}
+.accordion-header {
+    cursor: pointer;
+    user-select: none;
+    padding: 5px 0;
+}
+.accordion-header:hover {
+    color: #1b4332;
+    opacity: 0.8;
+}
+.accordion-header.active {
+    color: #8bc34a;
+}
+.accordion-header.active i {
+    transform: rotate(180deg); /* Animasi panah terbalik */
+}
+/* =========================================================
+   HERO / BERANDA BANNER DENGAN BACKGROUND TRANSPARAN (P010)
+   ========================================================= */
+
+.hero-section {
+    position: relative;
+    width: 100%;
+    min-height: 280px;
+    /* Efek transparansi hijau tua akademis di atas foto P010 */
+    background: linear-gradient(
+        rgba(27, 67, 50, 0.82), 
+        rgba(45, 106, 79, 0.78)
+    ), 
+    url('images/P010.jpg'); /* Sesuaikan nama file: P010.jpg atau P010.png */
+    
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #ffffff;
+    text-align: center;
+    padding: 30px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-bottom: 4px solid #fbc02d;
+}
+
+/* Judul Utama di atas Foto */
+.hero-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Deskripsi Singkat */
+.hero-subtitle {
+    font-size: 15px;
+    max-width: 750px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #f1f8e9;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Card Statistik Cepat / Badge Info */
+.hero-badges {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.hero-badge-item {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(5px); /* Efek Kaca Transparan / Glassmorphism */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+}
